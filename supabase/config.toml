@@ -1,5 +1,0 @@
-# Link with: supabase link --project-ref <YOUR_PANCHYAT360_REF>
-# project_id is set automatically after link.
-
-[functions.telegram-bot]
-verify_jwt = false
