@@ -7,13 +7,24 @@ type Props = {
   lang: Lang;
   onChange: (lang: Lang) => void;
   className?: string;
+  /** dark = over photo / war board */
+  tone?: "light" | "dark";
 };
 
-export function LangToggle({ lang, onChange, className }: Props) {
+export function LangToggle({
+  lang,
+  onChange,
+  className,
+  tone = "light",
+}: Props) {
+  const dark = tone === "dark";
   return (
     <div
       className={cn(
-        "flex h-11 items-center rounded-full border border-black/[0.04] bg-[#F5F5F7] p-1",
+        "flex h-10 items-center rounded-full p-1",
+        dark
+          ? "border border-white/15 bg-black/35 backdrop-blur-md"
+          : "border border-[var(--pp-ink)]/10 bg-[var(--pp-dust-deep)]/80",
         className,
       )}
     >
@@ -21,10 +32,14 @@ export function LangToggle({ lang, onChange, className }: Props) {
         type="button"
         onClick={() => onChange("te")}
         className={cn(
-          "h-9 min-w-[56px] rounded-full px-3 text-xs font-bold transition-all",
+          "h-8 min-w-[52px] rounded-full px-3 text-xs font-bold transition-all",
           lang === "te"
-            ? "bg-white text-[#007AFF] shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
-            : "text-[#6E6E73] hover:text-[#1D1D1F]",
+            ? dark
+              ? "bg-[var(--pp-amber)] text-[var(--pp-midnight)]"
+              : "bg-white text-[var(--pp-ink)] shadow-sm"
+            : dark
+              ? "text-white/60 hover:text-white"
+              : "text-[var(--pp-muted)] hover:text-[var(--pp-ink)]",
         )}
       >
         తెలుగు
@@ -33,10 +48,14 @@ export function LangToggle({ lang, onChange, className }: Props) {
         type="button"
         onClick={() => onChange("en")}
         className={cn(
-          "h-9 min-w-[44px] rounded-full px-3 text-xs font-bold transition-all",
+          "h-8 min-w-[40px] rounded-full px-3 text-xs font-bold transition-all",
           lang === "en"
-            ? "bg-white text-[#007AFF] shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
-            : "text-[#6E6E73] hover:text-[#1D1D1F]",
+            ? dark
+              ? "bg-[var(--pp-amber)] text-[var(--pp-midnight)]"
+              : "bg-white text-[var(--pp-ink)] shadow-sm"
+            : dark
+              ? "text-white/60 hover:text-white"
+              : "text-[var(--pp-muted)] hover:text-[var(--pp-ink)]",
         )}
       >
         EN

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Check,
@@ -75,33 +76,54 @@ export function ClientStrategyPortal({
   const marginPct = (54.2 + turnoutShift * 0.4).toFixed(1);
 
   return (
-    <div className="relative min-h-screen bg-[#F5F5F7] text-[#1D1D1F] antialiased selection:bg-[#007AFF]/15">
-      <ConfidentialWatermark clientName={clientName} clientPhone={clientPhone} />
+    <div className="relative min-h-screen bg-[var(--wb-bg)] text-[var(--wb-text)] antialiased selection:bg-[var(--wb-stamp)]/30">
+      <ConfidentialWatermark
+        clientName={clientName}
+        clientPhone={clientPhone}
+        tone="dark"
+      />
+
+      {/* Paper grain */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
+        aria-hidden
+      />
 
       <div
         className={cn(
-          "relative z-10 mx-auto max-w-[1200px] space-y-6 px-4 py-6 sm:space-y-10 sm:px-6 sm:py-10",
+          "relative z-10 mx-auto max-w-[1200px] space-y-6 px-4 py-5 sm:space-y-8 sm:px-6 sm:py-8",
           locked && "pointer-events-none select-none",
         )}
       >
         {locked && (
-          <div className="pointer-events-auto absolute inset-0 z-40 flex items-start justify-center rounded-[32px] bg-white/40 pt-40 backdrop-blur-md">
-            <div className="rounded-[24px] border border-white/60 bg-white/85 px-6 py-4 text-center shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
+          <div className="pointer-events-auto absolute inset-0 z-40 flex items-start justify-center bg-black/50 pt-36 backdrop-blur-sm">
+            <div className="border border-[var(--wb-line)] bg-[var(--wb-panel)] px-6 py-5 text-center">
               <p className="text-sm font-extrabold">{d.lockedPreview}</p>
-              <p className="mt-1 text-xs text-[#6E6E73]">
+              <p className="mt-1 text-xs text-[var(--wb-muted)]">
                 Unlock via Super Admin after payment verification
               </p>
             </div>
           </div>
         )}
 
-        <header className="flex h-[52px] items-center justify-between rounded-full border border-white/50 bg-white/70 px-4 shadow-[0_8px_30px_rgba(0,0,0,0.03)] backdrop-blur-[50px] sm:h-16 sm:px-6">
-          <Panchayat360Logo size="sm" withTagline={false} lang={lang} />
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--wb-line)] pb-4">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="shrink-0">
+              <Panchayat360Logo size="sm" withTagline={false} lang={lang} inverse />
+            </Link>
+            <span className="hidden rotate-[-8deg] border-2 border-[var(--wb-stamp)] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest text-[var(--wb-stamp)] sm:inline">
+              LIVE AUDIT
+            </span>
+          </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <LangToggle lang={lang} onChange={setLang} />
+            <LangToggle lang={lang} onChange={setLang} tone="dark" />
             <button
               type="button"
-              className="hidden h-11 items-center gap-2 rounded-full bg-gradient-to-r from-[#FD1D1D] to-[#FCAF45] px-5 text-xs font-bold text-white shadow-[0_4px_16px_rgba(253,29,29,0.25)] sm:inline-flex"
+              className="hidden h-10 items-center gap-2 border border-[var(--wb-stamp)]/60 bg-[var(--wb-stamp)]/10 px-4 text-xs font-bold text-[var(--wb-stamp)] sm:inline-flex"
             >
               <Download className="h-3.5 w-3.5" />
               {d.downloadWarBoard}
@@ -109,157 +131,168 @@ export function ClientStrategyPortal({
           </div>
         </header>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 px-2 text-xs font-semibold text-[#6E6E73]">
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#1DB954]" />
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span className="inline-flex items-center gap-2 font-semibold text-[var(--wb-muted)]">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--pp-safe)]" />
             {territory}
           </span>
-          <span className="rounded-full border border-black/[0.04] bg-white/80 px-3 py-1 backdrop-blur-md">
-            240 Validated Samples • Tier-2 SSR-FPC
+          <span className="font-mono text-[10px] text-[var(--wb-muted)]">
+            240 VALIDATED · TIER-2 SSR-FPC
           </span>
         </div>
 
-        {/* Scorecard */}
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-3 sm:gap-6">
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E6E73]">
-                {d.winProbabilityTitle}
+        {/* Score strip — dense war-board stats */}
+        <section className="grid grid-cols-1 gap-px bg-[var(--wb-line)] sm:grid-cols-3">
+          <div className="bg-[var(--wb-panel)] p-5 sm:p-6">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--wb-muted)]">
+              {d.winProbabilityTitle}
+            </span>
+            <div className="mt-2 flex items-baseline gap-3">
+              <span className="font-mono text-4xl font-bold tracking-tight sm:text-5xl">
+                54.2%
               </span>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-black tracking-tight sm:text-4xl">
-                  54.2%
-                </span>
-                <span className="rounded-full border border-[#1DB954]/20 bg-[#1DB954]/10 px-2 py-0.5 text-xs font-bold text-[#1DB954]">
-                  {d.leadDelta}
-                </span>
-              </div>
-              <p className="mt-2 text-xs font-medium text-[#6E6E73]">
-                {d.winProbabilitySub}
-              </p>
+              <span className="font-mono text-xs font-bold text-[var(--pp-safe)]">
+                {d.leadDelta}
+              </span>
             </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#F5F5F7]">
-              <div className="h-full w-[54.2%] rounded-full bg-[#007AFF]" />
+            <p className="mt-2 text-xs text-[var(--wb-muted)]">{d.winProbabilitySub}</p>
+            <div className="mt-4 h-1 overflow-hidden bg-black/40">
+              <div className="h-full w-[54.2%] bg-[var(--pp-amber)]" />
             </div>
           </div>
 
-          <div className="flex flex-col justify-between rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E6E73]">
-                {d.primaryGrievanceTitle}
-              </span>
-              <div className="mt-2 text-sm font-extrabold leading-snug sm:text-base">
-                {d.primaryGrievanceVal}
-              </div>
+          <div className="bg-[var(--wb-panel)] p-5 sm:p-6">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--wb-muted)]">
+              {d.primaryGrievanceTitle}
+            </span>
+            <div className="mt-2 text-sm font-bold leading-snug sm:text-base">
+              {d.primaryGrievanceVal}
             </div>
-            <div className="mt-3 inline-flex items-center self-start rounded-full bg-[#FEF3C7] px-3 py-1.5 text-xs font-medium text-[#B45309]">
-              <AlertTriangle className="mr-1.5 h-3.5 w-3.5 shrink-0" />
+            <div className="mt-4 inline-flex items-center gap-1.5 border border-[var(--pp-battleground)]/40 bg-[var(--pp-battleground)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--pp-amber-hot)]">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
               {d.grievanceWarning}
             </div>
           </div>
 
-          <div className="flex flex-col justify-between rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E6E73]">
-                {d.coalitionTitle}
-              </span>
-              <div className="mt-2 text-2xl font-black tracking-tight">
-                76% Consolidated
-              </div>
-              <p className="mt-1 text-xs font-medium text-[#6E6E73]">
-                {d.coalitionSub}
-              </p>
+          <div className="bg-[var(--wb-panel)] p-5 sm:p-6">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--wb-muted)]">
+              {d.coalitionTitle}
+            </span>
+            <div className="mt-2 font-mono text-3xl font-bold tracking-tight sm:text-4xl">
+              76%
             </div>
-            <div className="mt-4 flex gap-1.5">
-              <span className="h-1.5 flex-1 rounded-full bg-[#1DB954]" />
-              <span className="h-1.5 flex-1 rounded-full bg-[#1DB954]" />
-              <span className="h-1.5 flex-1 rounded-full bg-[#1DB954]" />
-              <span className="h-1.5 w-12 rounded-full bg-[#F59E0B]" />
+            <p className="mt-1 text-xs text-[var(--wb-muted)]">{d.coalitionSub}</p>
+            <div className="mt-4 flex gap-1">
+              <span className="h-1.5 flex-1 bg-[var(--pp-safe)]" />
+              <span className="h-1.5 flex-1 bg-[var(--pp-safe)]" />
+              <span className="h-1.5 flex-1 bg-[var(--pp-safe)]" />
+              <span className="h-1.5 w-10 bg-[var(--pp-battleground)]" />
             </div>
           </div>
         </section>
 
-        {/* RAG grid */}
-        <section className="space-y-6 rounded-[32px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:p-8">
-          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+        {/* RAG war grid — large interactive cells */}
+        <section className="border border-[var(--wb-line)] bg-[var(--wb-panel)]">
+          <div className="flex flex-col justify-between gap-3 border-b border-[var(--wb-line)] px-5 py-4 sm:flex-row sm:items-center sm:px-6">
             <div>
-              <h3 className="text-base font-black tracking-tight sm:text-lg">
+              <h3 className="text-base font-extrabold tracking-tight sm:text-lg">
                 {d.ragMatrixTitle}
               </h3>
-              <p className="text-xs text-[#6E6E73]">{d.ragMatrixSub}</p>
+              <p className="text-xs text-[var(--wb-muted)]">{d.ragMatrixSub}</p>
             </div>
-            <div className="flex items-center gap-3 text-xs font-semibold">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#1DB954]" />
-                {d.safeCount} ({counts.green})
+            <div className="flex flex-wrap items-center gap-4 font-mono text-[10px] font-semibold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 text-[var(--pp-safe)]">
+                <span className="h-2.5 w-2.5 bg-[var(--pp-safe)]" />
+                {d.safeCount} {counts.green}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]" />
-                {d.battlegroundCount} ({counts.yellow})
+              <span className="inline-flex items-center gap-1.5 text-[var(--pp-battleground)]">
+                <span className="h-2.5 w-2.5 bg-[var(--pp-battleground)]" />
+                {d.battlegroundCount} {counts.yellow}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
-                {d.deficitCount} ({counts.red})
+              <span className="inline-flex items-center gap-1.5 text-[var(--pp-danger)]">
+                <span className="h-2.5 w-2.5 bg-[var(--pp-danger)]" />
+                {d.deficitCount} {counts.red}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-px bg-[var(--wb-line)] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {WARDS.map((w) => {
-              const border =
+              const tone =
                 w.status === "green"
-                  ? "border-[#1DB954]/30 bg-[#1DB954]/[0.02]"
+                  ? {
+                      bar: "bg-[var(--pp-safe)]",
+                      delta: "text-[var(--pp-safe)]",
+                      wash: "bg-[var(--pp-safe)]/[0.06]",
+                    }
                   : w.status === "yellow"
-                    ? "border-[#F59E0B]/50 bg-[#F59E0B]/[0.04]"
-                    : "border-[#EF4444]/30 bg-[#EF4444]/[0.02]";
-              const tag =
-                w.status === "green"
-                  ? "bg-[#1DB954]/10 text-[#1DB954]"
-                  : w.status === "yellow"
-                    ? "bg-[#F59E0B]/10 text-[#D97706]"
-                    : "bg-[#EF4444]/10 text-[#DC2626]";
+                    ? {
+                        bar: "bg-[var(--pp-battleground)]",
+                        delta: "text-[var(--pp-battleground)]",
+                        wash: "bg-[var(--pp-battleground)]/[0.08]",
+                      }
+                    : {
+                        bar: "bg-[var(--pp-danger)]",
+                        delta: "text-[var(--pp-danger)]",
+                        wash: "bg-[var(--pp-danger)]/[0.07]",
+                      };
               return (
                 <button
                   key={w.id}
                   type="button"
                   onClick={() => setActiveWard(w.id)}
                   className={cn(
-                    "rounded-2xl border p-4 text-left transition-all hover:shadow-md",
-                    border,
-                    activeWard === w.id && "bg-white shadow-md ring-2 ring-[#007AFF]",
+                    "relative min-h-[110px] p-4 text-left transition-colors",
+                    tone.wash,
+                    activeWard === w.id
+                      ? "bg-white/10 ring-2 ring-inset ring-[var(--pp-amber)]"
+                      : "hover:bg-white/[0.04]",
                   )}
                 >
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="text-xs font-black">{w.label}</span>
-                    <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-black", tag)}>
+                  <span className={cn("absolute left-0 top-0 h-full w-1", tone.bar)} />
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <span className="text-xs font-extrabold">{w.label}</span>
+                    <span className={cn("font-mono text-sm font-bold", tone.delta)}>
                       {w.delta}
                     </span>
                   </div>
-                  <p className="mt-1 text-[11px] font-medium leading-snug text-[#6E6E73]">
+                  <p className="text-[11px] font-medium leading-snug text-[var(--wb-muted)]">
                     {w.note}
                   </p>
+                  {/* redacted bar accent */}
+                  <div className="mt-3 h-1.5 w-2/3 bg-white/10">
+                    <div
+                      className={cn("h-full", tone.bar)}
+                      style={{
+                        width: `${Math.min(95, Math.abs(parseInt(w.delta, 10)) * 1.6)}%`,
+                      }}
+                    />
+                  </div>
                 </button>
               );
             })}
           </div>
         </section>
 
-        {/* Simulator + audio */}
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="space-y-4 rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 text-[#007AFF]">
-              <Sliders className="h-5 w-5" />
-              <h4 className="text-sm font-extrabold text-[#1D1D1F]">
+        <section className="grid grid-cols-1 gap-px bg-[var(--wb-line)] lg:grid-cols-2">
+          <div className="space-y-4 bg-[var(--wb-panel)] p-5 sm:p-6">
+            <div className="flex items-center gap-2 text-[var(--pp-amber)]">
+              <Sliders className="h-4 w-4" />
+              <h4 className="text-sm font-extrabold text-[var(--wb-text)]">
                 {d.simulatorTitle}
               </h4>
             </div>
-            <p className="text-xs leading-relaxed text-[#6E6E73]">{d.simulatorSub}</p>
-            <div className="space-y-4 pt-2">
-              <div className="flex justify-between text-xs font-bold">
+            <p className="text-xs leading-relaxed text-[var(--wb-muted)]">
+              {d.simulatorSub}
+            </p>
+            <div className="space-y-4 pt-1">
+              <div className="flex justify-between font-mono text-xs font-bold">
                 <span>{d.turnoutLabel}</span>
                 <span
                   className={
-                    turnoutShift >= 0 ? "text-[#1DB954]" : "text-[#EF4444]"
+                    turnoutShift >= 0
+                      ? "text-[var(--pp-safe)]"
+                      : "text-[var(--pp-danger)]"
                   }
                 >
                   {turnoutShift > 0 ? `+${turnoutShift}%` : `${turnoutShift}%`}
@@ -271,88 +304,92 @@ export function ClientStrategyPortal({
                 max={15}
                 value={turnoutShift}
                 onChange={(e) => setTurnoutShift(Number(e.target.value))}
-                className="h-2 w-full cursor-pointer accent-[#007AFF]"
+                className="h-1.5 w-full cursor-pointer accent-[var(--pp-amber)]"
               />
-              <div className="flex h-12 items-center justify-between rounded-2xl border border-black/[0.04] bg-[#F5F5F7] px-4 text-xs font-semibold">
-                <span className="text-[#6E6E73]">{d.simulatedMarginLabel}</span>
-                <span className="text-sm font-black">
-                  {marginVotes} Votes ({marginPct}%)
+              <div className="flex h-12 items-center justify-between border border-[var(--wb-line)] bg-black/30 px-4 font-mono text-xs">
+                <span className="text-[var(--wb-muted)]">{d.simulatedMarginLabel}</span>
+                <span className="text-sm font-bold">
+                  {marginVotes} · {marginPct}%
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 text-[#6366F1]">
-              <Volume2 className="h-5 w-5" />
-              <h4 className="text-sm font-extrabold text-[#1D1D1F]">
+          <div className="space-y-4 bg-[var(--wb-panel)] p-5 sm:p-6">
+            <div className="flex items-center gap-2 text-[var(--pp-amber)]">
+              <Volume2 className="h-4 w-4" />
+              <h4 className="text-sm font-extrabold text-[var(--wb-text)]">
                 {d.audioVaultTitle}
               </h4>
             </div>
-            <p className="text-xs leading-relaxed text-[#6E6E73]">{d.audioVaultSub}</p>
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-black/[0.04] bg-[#F5F5F7] p-4">
+            <p className="text-xs leading-relaxed text-[var(--wb-muted)]">
+              {d.audioVaultSub}
+            </p>
+            <div className="flex items-center justify-between gap-3 border border-[var(--wb-line)] bg-black/30 p-4">
               <div>
                 <div className="text-xs font-bold">మహిళా ఓటరు (Ward 4 - BC Palem)</div>
-                <p className="mt-1 text-[11px] italic leading-snug text-[#6E6E73]">
+                <p
+                  className="mt-1 text-[11px] italic leading-snug text-[var(--wb-muted)]"
+                  style={{ fontFamily: "var(--font-noto-te), sans-serif" }}
+                >
                   &ldquo;నాలుగు నెలలుగా పైపులైను పగిలి నీరు రావడం లేదు…&rdquo;
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setPlaying((p) => !p)}
-                className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-black/[0.06] bg-white px-4 text-xs font-bold text-[#007AFF]"
+                className="inline-flex h-10 shrink-0 items-center gap-1.5 border border-[var(--pp-amber)]/50 bg-[var(--pp-amber)]/10 px-3 font-mono text-xs font-bold text-[var(--pp-amber)]"
               >
                 {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                {playing ? "0:08" : "Play 0:14"}
+                {playing ? "0:08" : "0:14"}
               </button>
             </div>
           </div>
         </section>
 
-        {/* Speech + opponent */}
-        <section className="space-y-4 rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center justify-between border-b border-black/[0.04] pb-3">
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-[#1DB954]" />
-              <h4 className="text-sm font-extrabold">
-                {d.speechTitle} —{" "}
-                <span className="text-[#007AFF]">Ward {activeWard} Focus</span>
-              </h4>
-            </div>
+        <section className="border border-[var(--wb-line)] bg-[var(--wb-panel)] p-5 sm:p-6">
+          <div className="mb-4 flex items-center gap-2 border-b border-[var(--wb-line)] pb-3">
+            <Check className="h-4 w-4 text-[var(--pp-safe)]" />
+            <h4 className="text-sm font-extrabold">
+              {d.speechTitle} —{" "}
+              <span className="text-[var(--pp-amber)]">Ward {activeWard}</span>
+            </h4>
           </div>
-          <div className="grid grid-cols-1 gap-3 text-xs md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-px bg-[var(--wb-line)] md:grid-cols-3">
             {[
-              [d.speech1Title, d.speech1Desc, "#007AFF"],
-              [d.speech2Title, d.speech2Desc, "#6366F1"],
-              [d.speech3Title, d.speech3Desc, "#EF4444"],
-            ].map(([title, desc, color]) => (
-              <div
-                key={title}
-                className="rounded-2xl border border-black/[0.04] bg-[#F5F5F7] p-4 leading-relaxed"
-              >
-                <strong className="mb-1 block" style={{ color }}>
-                  {title}
-                </strong>
-                {desc}
+              [d.speech1Title, d.speech1Desc],
+              [d.speech2Title, d.speech2Desc],
+              [d.speech3Title, d.speech3Desc],
+            ].map(([title, desc]) => (
+              <div key={title} className="bg-[var(--wb-bg)] p-4 text-xs leading-relaxed">
+                <strong className="mb-1 block text-[var(--pp-amber)]">{title}</strong>
+                <span className="text-[var(--wb-muted)]">{desc}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="space-y-3 rounded-[24px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <h4 className="text-sm font-extrabold">{d.opponentTitle}</h4>
+        <section className="border border-[var(--wb-line)] bg-[var(--wb-panel)] p-5 sm:p-6">
+          <h4 className="mb-3 text-sm font-extrabold">{d.opponentTitle}</h4>
           <ul className="space-y-2">
             {OPPONENTS.map((o) => (
               <li
                 key={o.name}
-                className="rounded-2xl border border-black/[0.04] bg-[#F5F5F7] px-4 py-3 text-xs"
+                className="border border-[var(--wb-line)] bg-black/25 px-4 py-3 text-xs"
               >
-                <span className="font-bold text-[#EF4444]">{o.name}</span>
-                <span className="text-[#6E6E73]"> — {o.weakness}</span>
+                <span className="font-bold text-[var(--pp-danger)]">{o.name}</span>
+                <span className="text-[var(--wb-muted)]"> — {o.weakness}</span>
               </li>
             ))}
           </ul>
         </section>
+
+        <footer className="flex justify-between border-t border-[var(--wb-line)] pt-4 text-[10px] text-[var(--wb-muted)]">
+          <span className="font-mono">CONFIDENTIAL · CLIENT WAR BOARD</span>
+          <Link href="/" className="hover:text-white">
+            ← Ground Pulse
+          </Link>
+        </footer>
       </div>
     </div>
   );

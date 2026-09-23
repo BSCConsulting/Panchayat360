@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity } from "lucide-react";
 import { DISTRICTS, findGp, gpsFor, mandalsFor } from "@/lib/gp";
 import { t } from "@/lib/i18n";
 import { crewForTimeline, samplesPerWard, TIER2_SAMPLE_BASELINE } from "@/lib/sampling";
@@ -35,26 +34,27 @@ export function ProjectEstimator({ lang }: Props) {
   }
 
   const selectClass =
-    "h-11 w-full rounded-2xl border border-black/[0.05] bg-[#F5F5F7] px-4 text-sm font-semibold text-[#1D1D1F] outline-none focus:ring-2 focus:ring-[#007AFF]/30";
+    "h-11 w-full border border-[var(--pp-ink)]/12 bg-[var(--pp-dust)] px-3 text-sm font-semibold text-[var(--pp-ink)] outline-none focus:border-[var(--pp-amber)] focus:ring-1 focus:ring-[var(--pp-amber)]";
 
   return (
-    <section
-      id="estimator"
-      className="rounded-[32px] border border-black/[0.05] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:p-8 space-y-6"
-    >
-      <div className="flex items-center justify-between gap-3 border-b border-black/[0.04] pb-4">
-        <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-[#007AFF]" />
-          <h2 className="text-sm font-extrabold text-[#1D1D1F] sm:text-base">
+    <section id="estimator" className="space-y-6 border border-[var(--pp-ink)]/10 bg-white/60 p-6 sm:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--pp-ink)]/10 pb-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--pp-amber)]">
+            SSR-FPC Engine
+          </p>
+          <h2
+            className="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl"
+            style={{ letterSpacing: "-0.03em" }}
+          >
             {d.estimatorTitle}
           </h2>
         </div>
-        <span className="text-xs font-medium text-[#6E6E73]">SSR-FPC Engine</span>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <label className="block space-y-2">
-          <span className="text-xs font-bold text-[#6E6E73]">{d.district}</span>
+          <span className="text-xs font-bold text-[var(--pp-muted)]">{d.district}</span>
           <select
             className={selectClass}
             value={district}
@@ -68,7 +68,7 @@ export function ProjectEstimator({ lang }: Props) {
           </select>
         </label>
         <label className="block space-y-2">
-          <span className="text-xs font-bold text-[#6E6E73]">{d.mandal}</span>
+          <span className="text-xs font-bold text-[var(--pp-muted)]">{d.mandal}</span>
           <select
             className={selectClass}
             value={mandal}
@@ -82,7 +82,7 @@ export function ProjectEstimator({ lang }: Props) {
           </select>
         </label>
         <label className="block space-y-2">
-          <span className="text-xs font-bold text-[#6E6E73]">{d.gp}</span>
+          <span className="text-xs font-bold text-[var(--pp-muted)]">{d.gp}</span>
           <select
             className={selectClass}
             value={gp?.gp_name ?? ""}
@@ -98,36 +98,30 @@ export function ProjectEstimator({ lang }: Props) {
       </div>
 
       {gp && (
-        <div className="flex flex-wrap gap-2">
-          <StatPill
-            label={d.population}
-            value={gp.gp_population.toLocaleString("en-IN")}
-          />
-          <StatPill label={d.wards} value={String(gp.statutory_wards)} />
-          <StatPill label={d.sampleTier} value={String(TIER2_SAMPLE_BASELINE)} />
-          <StatPill
-            label="Per ward"
-            value={String(samplesPerWard(gp.statutory_wards))}
-          />
-          <StatPill label="Tier" value={gp.statutory_tier} />
+        <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs">
+          <Stat label={d.population} value={gp.gp_population.toLocaleString("en-IN")} />
+          <Stat label={d.wards} value={String(gp.statutory_wards)} />
+          <Stat label={d.sampleTier} value={String(TIER2_SAMPLE_BASELINE)} />
+          <Stat label="Per ward" value={String(samplesPerWard(gp.statutory_wards))} />
+          <Stat label="Tier" value={gp.statutory_tier} />
         </div>
       )}
 
       <div>
-        <p className="mb-2 text-xs font-bold text-[#6E6E73]">
+        <p className="mb-2 text-xs font-bold text-[var(--pp-muted)]">
           {d.timelineDaysLabel}
         </p>
-        <div className="grid grid-cols-3 gap-2 max-w-md">
+        <div className="grid max-w-md grid-cols-3 gap-2">
           {([2, 3, 4] as const).map((day) => (
             <button
               key={day}
               type="button"
               onClick={() => setDays(day)}
               className={cn(
-                "h-11 rounded-2xl text-xs font-bold border transition-all",
+                "h-11 text-xs font-bold border transition-colors",
                 days === day
-                  ? "border-transparent bg-slate-900 text-white shadow-sm"
-                  : "border-black/[0.04] bg-[#F5F5F7] text-[#1D1D1F] hover:bg-slate-100",
+                  ? "border-[var(--pp-midnight)] bg-[var(--pp-midnight)] text-white"
+                  : "border-[var(--pp-ink)]/12 bg-[var(--pp-dust)] text-[var(--pp-ink)] hover:border-[var(--pp-amber)]",
               )}
             >
               {day} Days
@@ -136,20 +130,23 @@ export function ProjectEstimator({ lang }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-px bg-[var(--pp-ink)]/10 sm:grid-cols-3">
         <Metric
           label={`Required ${d.surveyors}`}
-          value={`${ops.surveyors} Enumerators`}
+          value={`${ops.surveyors}`}
+          unit="Enumerators"
           hint="Capped at 20 valid interviews/day"
         />
         <Metric
           label={d.supervisor}
-          value={`${ops.supervisors} Auditor`}
+          value={`${ops.supervisors}`}
+          unit="Auditor"
           hint="10% back-checks & GPS audits"
         />
         <Metric
           label="Daily target"
-          value={`${ops.dailyTarget} samples`}
+          value={`${ops.dailyTarget}`}
+          unit="samples"
           hint={`Crew of ${ops.totalCrew}`}
         />
       </div>
@@ -157,11 +154,11 @@ export function ProjectEstimator({ lang }: Props) {
   );
 }
 
-function StatPill({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <span className="inline-flex h-11 items-center gap-2 rounded-full border border-black/[0.04] bg-[#F5F5F7] px-4 text-xs font-semibold text-[#1D1D1F]">
-      <span className="text-[#6E6E73]">{label}</span>
-      <span className="font-extrabold">{value}</span>
+    <span className="inline-flex items-baseline gap-2">
+      <span className="font-sans text-[var(--pp-muted)]">{label}</span>
+      <span className="font-bold text-[var(--pp-ink)]">{value}</span>
     </span>
   );
 }
@@ -169,17 +166,24 @@ function StatPill({ label, value }: { label: string; value: string }) {
 function Metric({
   label,
   value,
+  unit,
   hint,
 }: {
   label: string;
   value: string;
+  unit: string;
   hint: string;
 }) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-black/[0.04] bg-[#F5F5F7] p-4">
-      <span className="text-[11px] font-bold text-[#6E6E73]">{label}</span>
-      <div className="mt-1 text-xl font-black text-[#1D1D1F]">{value}</div>
-      <span className="mt-1 text-[10px] text-[#6E6E73]">{hint}</span>
+    <div className="bg-[var(--pp-dust)] p-4 sm:p-5">
+      <span className="text-[11px] font-bold text-[var(--pp-muted)]">{label}</span>
+      <div className="mt-1 flex items-baseline gap-2">
+        <span className="font-mono text-3xl font-bold tracking-tight text-[var(--pp-ink)]">
+          {value}
+        </span>
+        <span className="text-xs font-semibold text-[var(--pp-muted)]">{unit}</span>
+      </div>
+      <span className="mt-1 block text-[10px] text-[var(--pp-muted)]">{hint}</span>
     </div>
   );
 }

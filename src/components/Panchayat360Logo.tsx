@@ -19,6 +19,8 @@ type Props = {
   withTagline?: boolean;
   lang?: Lang;
   className?: string;
+  /** inverse = on dark photo / war board */
+  inverse?: boolean;
 };
 
 /** 360° ward-radar emblem + Panchayat360 wordmark. */
@@ -27,6 +29,7 @@ export function Panchayat360Logo({
   withTagline = true,
   lang = "en",
   className,
+  inverse = false,
 }: Props) {
   const s = SIZE_MAP[size];
   const tagline =
@@ -39,24 +42,20 @@ export function Panchayat360Logo({
       <WardRadarEmblem size={s.emblem} />
       <div className="min-w-0 leading-tight">
         <div
-          className={cn(
-            "font-extrabold tracking-tight",
-            s.title,
-          )}
-          style={{
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Inter", sans-serif',
-            letterSpacing: "-0.5px",
-          }}
+          className={cn("font-extrabold tracking-tight", s.title)}
+          style={{ letterSpacing: "-0.04em" }}
         >
-          <span className="text-[#0F172A]">Panchayat</span>
-          <span className="text-[#007AFF]">360</span>
+          <span className={inverse ? "text-white" : "text-[var(--pp-ink)]"}>
+            Panchayat
+          </span>
+          <span className="text-[var(--pp-amber)]">360</span>
         </div>
         {withTagline && (
           <p
             className={cn(
-              "font-semibold text-[#6E6E73] truncate",
+              "truncate font-semibold",
               s.tag,
+              inverse ? "text-white/70" : "text-[var(--pp-muted)]",
               lang === "te" && "leading-[1.6]",
             )}
             style={
@@ -90,9 +89,9 @@ export function WardRadarEmblem({
 
   // Highlight indices (0 = top / -90° start): top-right ≈ 1, right/bottom-right ≈ 3, bottom-left ≈ 7
   const accents: Record<number, { fill: string; glow: string }> = {
-    1: { fill: "#F59E0B", glow: "rgba(245,158,11,0.45)" }, // battleground
-    3: { fill: "#10B981", glow: "rgba(16,185,129,0.45)" }, // safe
-    7: { fill: "#007AFF", glow: "rgba(0,122,255,0.45)" }, // strategic
+    1: { fill: "#E8A317", glow: "rgba(232,163,23,0.45)" },
+    3: { fill: "#2F9E6B", glow: "rgba(47,158,107,0.45)" },
+    7: { fill: "#E8DFD0", glow: "rgba(232,223,208,0.35)" },
   };
 
   // polar() treats 0° as top; accents: ~1 o'clock, ~4 o'clock, ~8 o'clock
@@ -199,7 +198,7 @@ export function WardRadarEmblem({
         fill="#FFFFFF"
         fontSize={22}
         fontWeight={800}
-        fontFamily='-apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", sans-serif'
+        fontFamily="var(--font-outfit), sans-serif"
       >
         P
       </text>
